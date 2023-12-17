@@ -35,40 +35,37 @@ fn compute_hash_for_part(part: &str) -> usize {
         .fold(0, |acc, c| ((acc + c as usize) * 17) % 256)
 }
 
-fn remove_lens_from_boxes(boxes: &mut Boxes, box_index: usize, lens: Lens) -> () {
-    boxes
-        .entry(box_index)
-        .and_modify(|v| {
-            let pos = v.iter().position(|l| l.label == lens.label);
-            match pos {
-                Some(i) => {
-                    v.remove(i);
-                }
-                _ => (),
-            }
-        })
-        .or_insert(vec![]);
-}
-
-fn insert_lens_into_box(boxes: &mut Boxes, box_index: usize, lens: Lens) -> () {
+fn insert_or_remove_lens_from_box(
+    boxes: &mut Boxes,
+    box_index: usize,
+    lens: Lens,
+    insert_lens: bool,
+) -> () {
     match boxes.entry(box_index) {
         Entry::Vacant(entry) => {
-            entry.insert(vec![lens]);
+            entry.insert(if insert_lens { vec![lens] } else { vec![] });
         }
         Entry::Occupied(entry) => {
-            let v = entry.into_mut();
-            let pos = v.iter().position(|l| l.label == lens.label);
-            match pos {
-                Some(i) => {
-                    v.remove(i);
-                    v.insert(i, lens);
+            let lenses = entry.into_mut();
+            if let Some(position) = lenses.iter().position(|l| l.label == lens.label) {
+                if insert_lens {
+                    lenses[position] = lens;
+                } else {
+                    lenses.remove(position);
                 }
-                _ => {
-                    v.push(lens);
-                }
+            } else if insert_lens {
+                lenses.push(lens);
             }
         }
     }
+}
+
+fn remove_lens_from_box(boxes: &mut Boxes, box_index: usize, lens: Lens) -> () {
+    insert_or_remove_lens_from_box(boxes, box_index, lens, false)
+}
+
+fn insert_lens_into_box(boxes: &mut Boxes, box_index: usize, lens: Lens) -> () {
+    insert_or_remove_lens_from_box(boxes, box_index, lens, true)
 }
 
 fn convert_string_to_lens(item: &str) -> LensWithOperation {
@@ -112,7 +109,7 @@ fn main() {
                 lens_with_operation.destined_box,
                 lens_with_operation.lens,
             ),
-            Operations::RemoveLens => remove_lens_from_boxes(
+            Operations::RemoveLens => remove_lens_from_box(
                 &mut boxes,
                 lens_with_operation.destined_box,
                 lens_with_operation.lens,
