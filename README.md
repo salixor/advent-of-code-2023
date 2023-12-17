@@ -4,10 +4,15 @@ Languages may be all over the place.
 
 # Completion timestamps
 
+## Bash
+
 - Day 1 @ `2023-12-01 20:37`
 - Day 2 @ `2023-12-02 21:06`
 - Day 4 @ `2023-12-04 16:07`
 - Day 6 @ `2023-12-06 23:00`
+
+## Rust
+
 - Day 15 :
   - Part 1 @ `2023-12-16 23:56`
   - Part 2 @ `2023-12-17 23:38`
