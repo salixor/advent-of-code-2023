@@ -4,3 +4,4 @@ Languages may be all over the place.
 
 - [Bash](./bash/README.md)
 - [Rust](./rust/README.md)
+- [Zig](./zig/README.md)
